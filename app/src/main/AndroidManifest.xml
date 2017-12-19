@@ -16,6 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider android:name="com.example.korg.bakingapp.BakingProvider"
+            android:authorities="com.example.korg.bakingapp"/>
     </application>
 
 </manifest>
