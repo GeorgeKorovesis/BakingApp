@@ -48,7 +48,6 @@ public class RetrofitController implements Callback<RecipeModel[]> {
     @Override
     public void onResponse(Call<RecipeModel[]> call, Response<RecipeModel[]> response) {
         if (response.isSuccessful()) {
-
             RecipeModel[] recipes = response.body();
             Ingredients[] ingredients;
             Steps[] steps;
@@ -61,24 +60,17 @@ public class RetrofitController implements Callback<RecipeModel[]> {
                 return;
 
             for(RecipeModel recipe: recipes) {
-                System.out.println("@@@@recipe.getId()="+recipe.getId());
                 cv.clear();
                 cv.put(COLUMN_RECIPES_NAME, recipe.getName());
                 cv.put(COLUMN_RECIPES_SERVINGS, recipe.getServings());
                 cv.put(COLUMN_RECIPES_IMAGE, recipe.getImage());
                 cv.put(COLUMN_RECIPES_ID, recipe.getId());
                 context.getContentResolver().insert(CONTENT_URI_RECIPES, cv);
-                System.out.println("@@@korg");
 
                 recipe_id = recipe.getId();
                 ingredients = recipe.getIngredients();
                 for(Ingredients in:ingredients){
                     cv.clear();
-
-                    System.out.println("@@@@in.getIngredient()="+in.getIngredient());
-                    System.out.println("@@@@in.getMeasure()="+in.getMeasure());
-                    System.out.println("@@@@in.getQuantity()="+in.getQuantity());
-                    System.out.println("@@@@recipe_id="+recipe_id);
 
                     cv.put(COLUMN_INGREDIENTS_INGREDIENT, in.getIngredient());
                     cv.put(COLUMN_INGREDIENTS_MEASURE, in.getMeasure());
@@ -106,6 +98,5 @@ public class RetrofitController implements Callback<RecipeModel[]> {
 
     @Override
     public void onFailure(Call<RecipeModel[]> call, Throwable t) {
-        System.out.println("fail=" + t.getMessage());
     }
 }

@@ -55,7 +55,6 @@ public class BakingProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
-        System.out.println("@@Uri in query=" + uri);
         db = dbHelper.getReadableDatabase();
         int uriMatch = uriMatcher.match(uri);
         Cursor cursor;
@@ -94,9 +93,8 @@ public class BakingProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        //needed???//
-        //getContext().getContentResolver().notifyChange(uri, null);
 
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -125,8 +123,6 @@ public class BakingProvider extends ContentProvider {
 
             case INGREDIENTS:
                 id = db.insert(TABLE_INGREDIENTS, null, values);
-                System.out.println("@@@CV="+values);
-                System.out.println("@@@id="+id);
 
                 if (id > 0)
                     returnUri = ContentUris.withAppendedId(uri, id);
@@ -136,9 +132,7 @@ public class BakingProvider extends ContentProvider {
                 break;
 
             case STEPS:
-                System.out.println("@@@STEPS case");
-                System.out.println("@@@CV="+values);
-                System.out.println("@@@uri="+uri);
+
                 id = db.insert(TABLE_STEPS, null, values);
                 if (id > 0)
                     returnUri = ContentUris.withAppendedId(uri, id);

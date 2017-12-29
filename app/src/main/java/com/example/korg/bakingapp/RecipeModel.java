@@ -1,7 +1,5 @@
 package com.example.korg.bakingapp;
 
-import android.telecom.Call;
-
 /**
  * Created by korg on 14/12/2017.
  */
