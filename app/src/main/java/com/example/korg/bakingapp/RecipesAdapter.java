@@ -16,10 +16,10 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIP
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder> {
 
-    Cursor recipesCursor;
-    Context context;
+    private Cursor recipesCursor;
+    private Context context;
 
-    public RecipesAdapter(Context context, Cursor recipesCursor) {
+    RecipesAdapter(Context context, Cursor recipesCursor) {
         this.context = context;
         this.recipesCursor = recipesCursor;
     }

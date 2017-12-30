@@ -19,14 +19,14 @@ import com.example.korg.bakingapp.RecipeModel.*;
 
 public class RetrofitController implements Callback<RecipeModel[]> {
 
-    private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net/";
-    private static Context context;
+    private final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net/";
+    private Context context;
 
-    public RetrofitController(Context context){
-        this.context = context;
+    RetrofitController(Context ctx){
+        context = ctx;
     }
 
-    public void start() {
+    void start() {
 
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -54,7 +54,7 @@ public class RetrofitController implements Callback<RecipeModel[]> {
 
             ContentValues cv = new ContentValues();
 
-            int recipe_id=0;
+            int recipe_id;
 
             if(recipes == null)
                 return;

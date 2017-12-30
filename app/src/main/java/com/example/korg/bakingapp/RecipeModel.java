@@ -20,56 +20,56 @@ public class RecipeModel {
         return name;
     }
 
-    public Ingredients[] getIngredients(){
+    Ingredients[] getIngredients(){
         return ingredients;
     }
 
-    public Steps[] getSteps(){
+    Steps[] getSteps(){
         return steps;
     }
 
-    public String getServings(){
+    String getServings(){
         return servings;
     }
 
-    public String getImage() { return image;}
+    String getImage() { return image;}
 
-    public class Ingredients {
+    class Ingredients {
         double quantity;
         String measure;
         String ingredient;
 
-        public double getQuantity(){
+        double getQuantity(){
             return quantity;
         }
-        public String getMeasure() {
+        String getMeasure() {
             return measure;
         }
-        public String getIngredient(){
+        String getIngredient(){
             return ingredient;
         }
     }
 
-    public class Steps {
+    class Steps {
         int id;
         String shortDescription;
         String description;
         String videoURL;
         String thumbnailURL;
 
-        public int getId(){
+        int getId(){
             return id;
         }
-        public String getShortDescription() {
+        String getShortDescription() {
             return shortDescription;
         }
-        public String getDescription(){
+        String getDescription(){
             return description;
         }
-        public String getVideoURL() {
+        String getVideoURL() {
             return videoURL;
         }
-        public String getThumbnailURL(){
+        String getThumbnailURL(){
             return thumbnailURL;
         }
     }

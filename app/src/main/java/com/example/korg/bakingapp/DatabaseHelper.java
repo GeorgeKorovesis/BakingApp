@@ -13,7 +13,7 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.*;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database table
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 1;
     private static final String DB_NAME = "recipes.db";
 
     // Database creation SQL statement
@@ -56,9 +56,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INGREDIENTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STEPS);
+        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_RECIPES).toString());
+        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_INGREDIENTS).toString());
+        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_STEPS).toString());
         onCreate(db);
     }
 }
