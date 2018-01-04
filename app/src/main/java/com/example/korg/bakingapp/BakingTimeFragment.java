@@ -21,10 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_ID;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_NAME;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_RECIPES;
+import static com.example.korg.bakingapp.RecipesAdapter.bakingTimeFragment;
+import static com.example.korg.bakingapp.RecipesAdapter.recipeCard;
 
 
-public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor> {
+public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     private RecipesAdapter recipesAdapter;
     private RecyclerView recView;
@@ -32,9 +36,17 @@ public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor>
     private static final int LOADER_ID = 1;
     private static final int GRID_COLS = 3;
     private static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
-    private static final String NO_CONNECTIVITY_MESSAGE ="NO INTERNET CONNECTION";
+    private static final String NO_CONNECTIVITY_MESSAGE = "NO INTERNET CONNECTION";
 
     SharedPreferences sharedPrefs;
+
+
+    public BakingTimeFragment() {
+    }
+
+    public static BakingTimeFragment newInstance() {
+        return new BakingTimeFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,16 +61,12 @@ public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor>
             RetrofitController controller = new RetrofitController(getActivity());
             controller.start();
             sharedPrefs.edit().putBoolean(getString(R.string.recipes_fetched), true).apply();
-        }
-        else
-        {
+        } else {
             networkReceiver = new NetworkReceiver();
             IntentFilter filter = new IntentFilter();
             filter.addAction(CONNECTIVITY_ACTION);
-            getActivity().registerReceiver(networkReceiver,filter);
+            getActivity().registerReceiver(networkReceiver, filter);
         }
-        getActivity().getLoaderManager().initLoader(LOADER_ID, null, this);
-
 
     }
 
@@ -77,15 +85,22 @@ public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor>
             layout = new GridLayoutManager(getActivity(), GRID_COLS);
 
         recView.setLayoutManager(layout);
-        recipesAdapter = new RecipesAdapter(getActivity(), null);
+        recipesAdapter = new RecipesAdapter(getActivity(), null, bakingTimeFragment, recipeCard);
         recView.setAdapter(recipesAdapter);
 
         boolean isOnline = Network.isOnline(getActivity());
         if (!isOnline && !sharedPrefs.getBoolean(getString(R.string.recipes_fetched), false)) {
-           Snackbar.make(getActivity().findViewById(R.id.main_id),NO_CONNECTIVITY_MESSAGE, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getActivity().findViewById(R.id.main_id), NO_CONNECTIVITY_MESSAGE, Snackbar.LENGTH_LONG).show();
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
+
     }
 
     @Override
@@ -102,7 +117,7 @@ public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor>
     public void onDestroy() {
         super.onDestroy();
 
-        if(networkReceiver!=null){
+        if (networkReceiver != null) {
             getActivity().unregisterReceiver(networkReceiver);
             networkReceiver = null;
         }
@@ -110,32 +125,34 @@ public class RecipesFragment extends Fragment implements LoaderCallbacks<Cursor>
 
     @Override
     public CursorLoader onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), CONTENT_URI_RECIPES, null,
+
+        String[] projection = {COLUMN_RECIPES_ID, COLUMN_RECIPES_NAME};
+
+        return new CursorLoader(getActivity(), CONTENT_URI_RECIPES, projection,
                 null, null, null);
     }
 
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        RecipesAdapter recipeAdapter = new RecipesAdapter(getActivity(), data);
-        recipeAdapter.notifyDataSetChanged();
-        recView.invalidate();
-        recView.setAdapter(recipeAdapter);
-        recipeAdapter.notifyDataSetChanged();
+        recipesAdapter.replaceData(data);
+        recipesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        recipesAdapter = new RecipesAdapter(getActivity(), null);
-        recView.setAdapter(recipesAdapter);
+        recipesAdapter.replaceData(null);
+        recipesAdapter.notifyDataSetChanged();
+
     }
 
-    private class NetworkReceiver extends BroadcastReceiver{
+    private class NetworkReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isOnline = Network.isOnline(getActivity());
-        /*Fetch data if there is intenret connectivity and data have not been fetched before*/
+
+        /*Fetch data if there is internet connectivity and data have not been fetched before*/
             if (isOnline && !sharedPrefs.getBoolean(getString(R.string.recipes_fetched), false)) {
                 RetrofitController controller = new RetrofitController(getActivity());
                 controller.start();

@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">BakingApp</string>
     <string name="recipes_fetched">Recipes Fetched</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="recipe_ingredients">Recipe Ingredients</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

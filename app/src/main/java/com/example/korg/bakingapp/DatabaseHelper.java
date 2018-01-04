@@ -18,19 +18,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database creation SQL statement
     private static final String TABLE_RECIPES_CREATE = "create table " + TABLE_RECIPES
-            + "(" +_ID + " integer primary key autoincrement, "
+            + "(" + _ID + " integer primary key autoincrement, "
             + COLUMN_RECIPES_ID + " integer not null, "
             + COLUMN_RECIPES_NAME + " text not null, "
             + COLUMN_RECIPES_SERVINGS + " text not null, "
             + COLUMN_RECIPES_IMAGE + " text not null " + ");";
 
     private static final String TABLE_INGREDIENTS_CREATE = "create table " + TABLE_INGREDIENTS
-            + "(" +_ID + " integer primary key autoincrement, "
+            + "(" + _ID + " integer primary key autoincrement, "
             + COLUMN_INGREDIENTS_RECIPE_ID + " integer not null, "
             + COLUMN_INGREDIENTS_QUANTITY + " double not null, "
             + COLUMN_INGREDIENTS_MEASURE + " text not null ,"
             + COLUMN_INGREDIENTS_INGREDIENT + " text not null ,"
-            + "FOREIGN KEY ("+COLUMN_INGREDIENTS_RECIPE_ID+") REFERENCES recipes("+COLUMN_RECIPES_ID+")" + ");";
+            + "FOREIGN KEY (" + COLUMN_INGREDIENTS_RECIPE_ID + ") REFERENCES recipes(" + COLUMN_RECIPES_ID + ")" + ");";
 
     private static final String TABLE_STEPS_CREATE = "create table " + TABLE_STEPS
             + "(" + _ID + " integer primary key autoincrement, "
@@ -40,10 +40,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_STEPS_DESCRIPTION + " text not null ,"
             + COLUMN_STEPS_VIDEOURL + " text not null ,"
             + COLUMN_STEPS_THUMBNAILURL + " text ,"
-            + "FOREIGN KEY ("+COLUMN_STEPS_RECIPE_ID+") REFERENCES recipes("+COLUMN_RECIPES_ID+")" + ");";
+            + "FOREIGN KEY (" + COLUMN_STEPS_RECIPE_ID + ") REFERENCES recipes(" + COLUMN_RECIPES_ID + ")" + ");";
 
 
-    public DatabaseHelper(Context context) {
+    DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -56,9 +56,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_RECIPES).toString());
-        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_INGREDIENTS).toString());
-        db.execSQL(new StringBuilder().append("DROP TABLE IF EXISTS ").append(TABLE_STEPS).toString());
+        db.execSQL("DROP TABLE IF EXISTS ".concat(TABLE_RECIPES));
+        db.execSQL("DROP TABLE IF EXISTS ".concat(TABLE_INGREDIENTS));
+        db.execSQL("DROP TABLE IF EXISTS ".concat(TABLE_STEPS));
         onCreate(db);
     }
 }
