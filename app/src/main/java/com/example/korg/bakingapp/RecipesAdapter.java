@@ -8,11 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_INGREDIENT;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_MEASURE;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_QUANTITY;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_NAME;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_DESCRIPTION;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_RECIPE_ID;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_SHORTDESCRIPTION;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_VIDEOURL;
 
 /**
  * Created by korg on 26/12/2017.
@@ -31,7 +36,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
     final static String recipeCard = "RecipeCard";
     final static String recipeIngredientsCard = "RecipeIngredientsCard";
     final static String recipeStepDescriptionCard = "RecipeStepDescriptionCard";
-
+    final static String recipeStepCard = "RecipeStepCard";
 
     RecipesAdapter(Object object, Cursor recipesCursor, String fragment, String card) {
         context = (Context) object;
@@ -64,40 +69,72 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
                     holder.recipe.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            callback.notifyActivity(bakingTimeFragment, recipeCard, id);
+                            callback.notifyActivity(bakingTimeFragment, recipeCard, id, 0);
                         }
                     });
                 }
                 break;
             }
             case recipeNameFragment: {
-                if (position == 0) {
-                    holder.recipe.setText(context.getString(R.string.recipe_ingredients));
-                    recipesCursor.moveToPosition(position);
+                switch(card) {
+                    case recipeCard: {
+                        if (position == 0) {
+                            holder.recipe.setText(context.getString(R.string.recipe_ingredients));
+                            recipesCursor.moveToPosition(position);
 
                     /*return recipe id*/
-                    final int id = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_RECIPE_ID));
+                            final int id = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_RECIPE_ID));
 
-                    holder.recipe.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            callback.notifyActivity(recipeNameFragment, recipeIngredientsCard, id);
-                        }
-                    });
-                } else {
-                    if (recipesCursor != null) {
-                        recipesCursor.moveToPosition(position - 1);
-                        holder.recipe.setText(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+                            holder.recipe.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    callback.notifyActivity(recipeNameFragment, recipeIngredientsCard, id, 0);
+                                }
+                            });
+                        } else {
+                            if (recipesCursor != null) {
+                                recipesCursor.moveToPosition(position - 1);
+                                holder.recipe.setText(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_STEPS_SHORTDESCRIPTION)));
 
-                        final int id = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_ID));
+                                final int stepsId = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_ID));
+                                final int recipeId = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_RECIPE_ID));
 
-                        holder.recipe.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                callback.notifyActivity(recipeNameFragment, recipeStepDescriptionCard, id);
+
+                                holder.recipe.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        callback.notifyActivity(recipeNameFragment, recipeStepDescriptionCard, recipeId, stepsId);
+                                    }
+                                });
                             }
-                        });
+                        }
+                        break;
                     }
+                    case recipeIngredientsCard: {
+                        if (recipesCursor != null) {
+                            recipesCursor.moveToPosition(position);
+                            String text = recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_INGREDIENTS_QUANTITY)).concat(" ").
+                                    concat(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_INGREDIENTS_MEASURE))).concat(" ").
+                                    concat(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_INGREDIENTS_INGREDIENT)));
+
+                            holder.recipe.setText(text);
+
+                        }
+                        break;
+                    }
+                    case recipeStepCard: {
+                        if (recipesCursor != null) {
+                            recipesCursor.moveToFirst();
+                            String text = recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_STEPS_DESCRIPTION)).concat(" ").
+                                    concat(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_STEPS_VIDEOURL)));
+
+                            holder.recipe.setText(text);
+                            System.out.println("#@@text="+text);
+                        }
+                        break;
+                    }
+                    default:
+                        break;
                 }
                 break;
             }
@@ -109,16 +146,16 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
     @Override
     public int getItemCount() {
 
-        int additionalItem = 0;
-
+        if(recipesCursor!=null) {
         /*add one to the count, since first card is related to Recipe Ingredients*/
-        if (fragment.equals(recipeNameFragment))
-            additionalItem++;
-
-            if (recipesCursor != null)
-                return (recipesCursor.getCount() + additionalItem);
+            if (fragment.equals(recipeNameFragment) && card.equals(recipeCard))
+                return recipesCursor.getCount() + 1;
             else
-                return 0;
+                return recipesCursor.getCount();
+        }
+        else
+            return 0;
+
         }
 
         class RecipeViewHolder extends RecyclerView.ViewHolder {

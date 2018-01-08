@@ -23,31 +23,34 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
         transaction.add(R.id.main_frame, recFragment);
         transaction.commit();
     }
-//    void notifyActivity(String recipeNameFragment, String recipeIngredientsCard, int id);
 
     @Override
-    public void notifyActivity(String tFragment, String tCard, int id) {
+    public void notifyActivity(String tFragment, String tCard, int recipeId, int stepsId) {
         FragmentTransaction transaction;
         switch (tFragment) {
             case (bakingTimeFragment):
-                System.out.println("@@@@go to create recipe fragment");
-                RecipeNameFragment rfragment = RecipeNameFragment.newInstance(id);
+                RecipeNameFragment rfragment = RecipeNameFragment.newInstance(recipeId);
                 transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.main_frame, rfragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
                 break;
             case (recipeNameFragment):
-                SampleFragment bFragment;
-                if (tCard.equals(recipeIngredientsCard))
-                    bFragment = SampleFragment.newInstance(recipeNameFragment, recipeIngredientsCard);
-                else {
-                    bFragment = SampleFragment.newInstance(recipeNameFragment, recipeStepDescriptionCard);
+                if (tCard.equals(recipeIngredientsCard)) {
+                    RecipeIngredientsFragment bFragment = RecipeIngredientsFragment.newInstance(recipeId);
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.main_frame, bFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                 }
-                transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.main_frame, bFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                else {
+                    RecipeStepInstructionFragment bFragment = RecipeStepInstructionFragment.newInstance(recipeId, stepsId);
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.main_frame, bFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+
                 break;
             default:
                 break;
