@@ -34,20 +34,12 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_RECIPE_ID;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_ID;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_NAME;
+
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_DESCRIPTION;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_RECIPE_ID;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_SHORTDESCRIPTION;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_THUMBNAILURL;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_VIDEOURL;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_INGREDIENTS;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_STEPS;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeStepCard;
 
 
 public class RecipeStepInstructionFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -76,7 +68,6 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
     private int currentCursorPos = 0;
 
     public RecipeStepInstructionFragment() {
-        // Required empty public constructor
     }
 
     public static RecipeStepInstructionFragment newInstance(int recipeId, int stepsId) {
@@ -122,9 +113,6 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
 
             description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
-//        exoPlayer.setPlayWhenReady(true);
-
-
         return rootView;
     }
 
@@ -143,17 +131,16 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
 
         this.data = data;
         this.dataLength = data.getCount();
-        if (data != null) {
-            data.moveToPosition(currentCursorPos);
-            String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
-            exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
-            exoPlayer.setPlayWhenReady(true);
 
-            exoPlayerView.setPlayer(exoPlayer);
-            exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-            description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
-        }
-        System.out.println("@@@length is " + dataLength);
+        data.moveToPosition(currentCursorPos);
+        String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
+        exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+        exoPlayer.setPlayWhenReady(true);
+
+        exoPlayerView.setPlayer(exoPlayer);
+        exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+
 
     }
 
@@ -193,20 +180,16 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
     public void nextClicked() {
 
         currentCursorPos = (currentCursorPos + 1) % dataLength;
-        System.out.println("@@@@Next clicked - pos=" + currentCursorPos);
 
         if (data != null) {
             data.moveToPosition(currentCursorPos);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
-            System.out.println("@@@url = " + url);
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
             exoPlayer.setPlayWhenReady(true);
             exoPlayerView.setPlayer(exoPlayer);
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
             description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
-        //exoPlayerView.setPlayer(exoPlayer);
-        //exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
 
     }
 
@@ -216,13 +199,10 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
             currentCursorPos--;
         else
             currentCursorPos = dataLength - 1;
-
-
-        System.out.println("@@@@Next clicked");
+        
         if (data != null) {
             data.moveToPosition(currentCursorPos);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
-            System.out.println("@@@url = " + url);
 
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
             exoPlayer.setPlayWhenReady(true);
