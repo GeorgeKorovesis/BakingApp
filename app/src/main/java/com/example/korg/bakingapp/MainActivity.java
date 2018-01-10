@@ -1,8 +1,10 @@
 package com.example.korg.bakingapp;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import static com.example.korg.bakingapp.RecipesAdapter.bakingTimeFragment;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
@@ -56,5 +58,15 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                 break;
         }
     }
+    public void nextClicked (View v){
+        Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
+        if (f instanceof RecipeStepInstructionFragment)
+            ((RecipeStepInstructionFragment) f).nextClicked();
+    }
 
+    public void previousClicked (View v){
+        Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
+        if (f instanceof RecipeStepInstructionFragment)
+            ((RecipeStepInstructionFragment) f).previousClicked();
+    }
 }

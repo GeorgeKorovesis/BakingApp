@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_RECIPE_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_INGREDIENTS;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
@@ -22,8 +23,7 @@ import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
 
 
 public class RecipeIngredientsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ID = "id";
     private static final int GRID_COLS = 3;
     private static final int LOADER_ID = 3;
@@ -31,10 +31,8 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     private RecyclerView recView;
     private RecipesAdapter recipesAdapter;
 
-
     public RecipeIngredientsFragment() {
     }
-
 
     public static RecipeIngredientsFragment newInstance(int id) {
         RecipeIngredientsFragment fragment = new RecipeIngredientsFragment();
@@ -96,8 +94,8 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
         String selection = COLUMN_INGREDIENTS_RECIPE_ID.concat("=?");
         String[] selectionArgs = {String.valueOf(recipeId)};
 
-        return new CursorLoader(getActivity(), CONTENT_URI_INGREDIENTS, null,
-                selection, selectionArgs, null);
+        return new CursorLoader(getActivity(), CONTENT_URI_INGREDIENTS,null,
+                selection, selectionArgs,null);
     }
 
     @Override

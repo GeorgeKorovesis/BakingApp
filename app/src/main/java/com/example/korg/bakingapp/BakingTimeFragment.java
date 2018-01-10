@@ -40,7 +40,6 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
 
     SharedPreferences sharedPrefs;
 
-
     public BakingTimeFragment() {
     }
 
@@ -56,7 +55,7 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
 
         boolean isOnline = Network.isOnline(getActivity());
 
-        /*Fetch data if there is intenret connectivity and data have not been fetched before*/
+        /*Fetch data if there is internet connectivity and data have not been fetched before*/
         if (isOnline && !sharedPrefs.getBoolean(getString(R.string.recipes_fetched), false)) {
             RetrofitController controller = new RetrofitController(getActivity());
             controller.start();
@@ -67,7 +66,6 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
             filter.addAction(CONNECTIVITY_ACTION);
             getActivity().registerReceiver(networkReceiver, filter);
         }
-
     }
 
     @Override
@@ -92,7 +90,6 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
         if (!isOnline && !sharedPrefs.getBoolean(getString(R.string.recipes_fetched), false)) {
             Snackbar.make(getActivity().findViewById(R.id.main_id), NO_CONNECTIVITY_MESSAGE, Snackbar.LENGTH_LONG).show();
         }
-
         return rootView;
     }
 
@@ -100,7 +97,6 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
     public void onResume() {
         super.onResume();
         getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
-
     }
 
     @Override
@@ -143,7 +139,6 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
     public void onLoaderReset(Loader<Cursor> loader) {
         recipesAdapter.replaceData(null);
         recipesAdapter.notifyDataSetChanged();
-
     }
 
     private class NetworkReceiver extends BroadcastReceiver {
@@ -160,5 +155,4 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
             }
         }
     }
-
 }

@@ -2,5 +2,8 @@
 <resources>
     <dimen name="card_height">100dp</dimen>
     <dimen name="card_margin">10dp</dimen>
+    <dimen name="button_left_margin">10dp</dimen>
     <dimen name="card_corner_radius">6dp</dimen>
+    <dimen name="card_padding">5dp</dimen>
+
 </resources>
