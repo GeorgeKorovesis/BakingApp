@@ -13,7 +13,7 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.*;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database table
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "recipes.db";
 
     // Database creation SQL statement

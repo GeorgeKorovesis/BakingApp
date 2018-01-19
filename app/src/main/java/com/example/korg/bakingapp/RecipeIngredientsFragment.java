@@ -45,8 +45,13 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-            recipeId = getArguments().getInt(ID);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(ID))
+            recipeId = savedInstanceState.getInt(ID);
+        else {
+            if (getArguments() != null)
+                recipeId = getArguments().getInt(ID);
+        }
 
     }
 
@@ -59,9 +64,10 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
         RecyclerView.LayoutManager layout;
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            layout = new LinearLayoutManager(getActivity());
+            layout = new GridLayoutManager(getActivity(), 1);
         else
             layout = new GridLayoutManager(getActivity(), GRID_COLS);
+
 
         recView.setLayoutManager(layout);
         recipesAdapter = new RecipesAdapter(getActivity(), null, recipeNameFragment, recipeIngredientsCard);
@@ -90,12 +96,11 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
         String selection = COLUMN_INGREDIENTS_RECIPE_ID.concat("=?");
         String[] selectionArgs = {String.valueOf(recipeId)};
 
-        return new CursorLoader(getActivity(), CONTENT_URI_INGREDIENTS,null,
-                selection, selectionArgs,null);
+        return new CursorLoader(getActivity(), CONTENT_URI_INGREDIENTS, null,
+                selection, selectionArgs, null);
     }
 
     @Override
@@ -108,5 +113,11 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     public void onLoaderReset(Loader<Cursor> loader) {
         recipesAdapter.replaceData(null);
         recipesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(ID, recipeId);
+        super.onSaveInstanceState(outState);
     }
 }

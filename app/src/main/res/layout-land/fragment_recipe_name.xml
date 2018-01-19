@@ -3,9 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_id"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.korg.bakingapp.RecipeStepInstructionFragment">
+    tools:context="com.example.korg.bakingapp.MainActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/card_margin"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_bottom"
+        app:layout_constraintEnd_toStartOf="@id/vertical_guideline"
+        app:layout_constraintStart_toEndOf="@id/vertical_guideline_left"
+
+
+        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_top" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_player"
@@ -13,9 +26,9 @@
         android:layout_height="0dp"
         android:layout_margin="@dimen/card_margin"
         android:background="@color/cardColor"
-        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_center"
-        app:layout_constraintEnd_toEndOf="@+id/horizontal_guideline_right"
-        app:layout_constraintStart_toEndOf="@+id/horizontal_guideline_left"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_middle"
+        app:layout_constraintEnd_toStartOf="@id/vertical_guideline_right"
+        app:layout_constraintStart_toEndOf="@id/vertical_guideline"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_top"
         card_view:cardCornerRadius="@dimen/card_corner_radius">
 
@@ -25,6 +38,7 @@
             android:layout_height="match_parent" />
     </android.support.v7.widget.CardView>
 
+
     <android.support.v7.widget.CardView
         android:id="@+id/card_view_steps"
         android:layout_width="0dp"
@@ -32,23 +46,22 @@
         android:layout_margin="@dimen/card_margin"
         android:background="@color/cardColor"
         app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_bottom"
-        app:layout_constraintEnd_toEndOf="@+id/horizontal_guideline_right"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/horizontal_guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_center"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_right"
+        app:layout_constraintStart_toEndOf="@+id/vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_middle"
         card_view:cardCornerRadius="@dimen/card_corner_radius">
 
         <ScrollView
+            android:id="@+id/SCROLLER_ID"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:scrollbars="vertical">
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:autoSizeTextType="uniform"
                 android:fontFamily="@font/abhaya_libre"
@@ -58,35 +71,40 @@
         </ScrollView>
     </android.support.v7.widget.CardView>
 
-    <ImageButton
-        android:id="@+id/previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_margin"
-        app:layout_constraintStart_toEndOf="@id/horizontal_guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_bottom"
-        android:onClick="previousClicked"
-        android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
-        tools:ignore="OnClick" />
-
-    <ImageButton
-        android:id="@+id/next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_margin"
-        app:layout_constraintEnd_toEndOf="@id/horizontal_guideline_right"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_bottom"
-        android:onClick="nextClicked"
-        android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
-        tools:ignore="OnClick"/>
-
-
     <android.support.constraint.Guideline
         android:id="@+id/vertical_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.3" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/horizontal_guideline_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/vertical_guideline_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/vertical_guideline_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/horizontal_guideline_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 
     <android.support.constraint.Guideline
         android:id="@+id/horizontal_guideline_top"
@@ -94,33 +112,5 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.01" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95" />
 
 </android.support.constraint.ConstraintLayout>

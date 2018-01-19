@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -12,7 +13,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.*;
+
 import com.example.korg.bakingapp.RecipeModel.*;
+
 /**
  * Created by korg on 14/12/2017.
  */
@@ -22,7 +25,7 @@ public class RetrofitController implements Callback<RecipeModel[]> {
     private final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net/";
     private Context context;
 
-    RetrofitController(Context ctx){
+    RetrofitController(Context ctx) {
         context = ctx;
     }
 
@@ -56,10 +59,10 @@ public class RetrofitController implements Callback<RecipeModel[]> {
 
             int recipe_id;
 
-            if(recipes == null)
+            if (recipes == null)
                 return;
 
-            for(RecipeModel recipe: recipes) {
+            for (RecipeModel recipe : recipes) {
                 cv.clear();
                 cv.put(COLUMN_RECIPES_NAME, recipe.getName());
                 cv.put(COLUMN_RECIPES_SERVINGS, recipe.getServings());
@@ -69,7 +72,7 @@ public class RetrofitController implements Callback<RecipeModel[]> {
 
                 recipe_id = recipe.getId();
                 ingredients = recipe.getIngredients();
-                for(Ingredients in:ingredients){
+                for (Ingredients in : ingredients) {
                     cv.clear();
 
                     cv.put(COLUMN_INGREDIENTS_INGREDIENT, in.getIngredient());
@@ -80,7 +83,7 @@ public class RetrofitController implements Callback<RecipeModel[]> {
                 }
 
                 steps = recipe.getSteps();
-                for(Steps st:steps){
+                for (Steps st : steps) {
                     cv.clear();
                     cv.put(COLUMN_STEPS_DESCRIPTION, st.getDescription());
                     cv.put(COLUMN_STEPS_ID, st.getId());
@@ -91,8 +94,6 @@ public class RetrofitController implements Callback<RecipeModel[]> {
                     context.getContentResolver().insert(CONTENT_URI_STEPS, cv);
                 }
             }
-        } else {
-            System.out.println(response.errorBody());
         }
     }
 

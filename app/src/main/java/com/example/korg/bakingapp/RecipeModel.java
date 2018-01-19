@@ -7,45 +7,49 @@ package com.example.korg.bakingapp;
 public class RecipeModel {
     int id;
     String name;
-    Ingredients [] ingredients;
-    Steps [] steps;
+    Ingredients[] ingredients;
+    Steps[] steps;
     String servings;
     String image;
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    Ingredients[] getIngredients(){
+    Ingredients[] getIngredients() {
         return ingredients;
     }
 
-    Steps[] getSteps(){
+    Steps[] getSteps() {
         return steps;
     }
 
-    String getServings(){
+    String getServings() {
         return servings;
     }
 
-    String getImage() { return image;}
+    String getImage() {
+        return image;
+    }
 
     class Ingredients {
         double quantity;
         String measure;
         String ingredient;
 
-        double getQuantity(){
+        double getQuantity() {
             return quantity;
         }
+
         String getMeasure() {
             return measure;
         }
-        String getIngredient(){
+
+        String getIngredient() {
             return ingredient;
         }
     }
@@ -57,19 +61,23 @@ public class RecipeModel {
         String videoURL;
         String thumbnailURL;
 
-        int getId(){
+        int getId() {
             return id;
         }
+
         String getShortDescription() {
             return shortDescription;
         }
-        String getDescription(){
+
+        String getDescription() {
             return description;
         }
+
         String getVideoURL() {
             return videoURL;
         }
-        String getThumbnailURL(){
+
+        String getThumbnailURL() {
             return thumbnailURL;
         }
     }

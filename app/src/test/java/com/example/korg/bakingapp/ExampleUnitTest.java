@@ -13,6 +13,5 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(5, 2 + 3);
-        System.out.println("true");
     }
 }

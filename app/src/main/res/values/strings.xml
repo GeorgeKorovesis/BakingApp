@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">BakingApp</string>
     <string name="recipes_fetched">Recipes Fetched</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="recipe_ingredients">Recipe Ingredients</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
-
 </resources>

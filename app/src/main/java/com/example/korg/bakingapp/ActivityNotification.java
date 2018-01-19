@@ -6,4 +6,6 @@ package com.example.korg.bakingapp;
 
 public interface ActivityNotification {
     void notifyActivity(String recipeNameFragment, String recipeIngredientsCard, int recipeId, int stepsId);
+
+    void updateActionBar(String title);
 }

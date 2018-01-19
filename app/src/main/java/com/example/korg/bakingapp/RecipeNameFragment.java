@@ -24,11 +24,13 @@ import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
 public class RecipeNameFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 2;
-    private static final int GRID_COLS = 3;
+    private static final int GRID_COLS_LAND = 3;
+    private static final int GRID_COLS_PORT = 1;
     private int recipeId;
     private static final String ID = "recipe_id";
     private RecyclerView recView;
     private RecipesAdapter recipesAdapter;
+    private LoaderManager manager;
 
     public RecipeNameFragment() {
     }
@@ -45,6 +47,7 @@ public class RecipeNameFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recipeId = getArguments().getInt(ID, 0);
+        manager = getActivity().getLoaderManager();
     }
 
     @Override
@@ -56,10 +59,13 @@ public class RecipeNameFragment extends Fragment implements LoaderManager.Loader
 
         RecyclerView.LayoutManager layout;
 
+        int columns;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            layout = new LinearLayoutManager(getActivity());
+            columns = GRID_COLS_PORT;
         else
-            layout = new GridLayoutManager(getActivity(), GRID_COLS);
+            columns = GRID_COLS_LAND;
+
+        layout = new GridLayoutManager(getActivity(), columns);
 
         recView.setLayoutManager(layout);
         recipesAdapter = new RecipesAdapter(getActivity(), null, recipeNameFragment, recipeCard);
@@ -73,7 +79,7 @@ public class RecipeNameFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
+        manager.restartLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -90,11 +96,14 @@ public class RecipeNameFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        String selection = COLUMN_INGREDIENTS_RECIPE_ID.concat("=?");
-        String[] selectionArgs = {String.valueOf(recipeId)};
+        if (id == LOADER_ID) {
+            String selection = COLUMN_INGREDIENTS_RECIPE_ID.concat("=?");
+            String[] selectionArgs = {String.valueOf(recipeId)};
 
-        return new CursorLoader(getActivity(), CONTENT_URI_STEPS, null,
-                selection, selectionArgs, null);
+            return new CursorLoader(getActivity(), CONTENT_URI_STEPS, null,
+                    selection, selectionArgs, null);
+        } else
+            return null;
     }
 
     @Override

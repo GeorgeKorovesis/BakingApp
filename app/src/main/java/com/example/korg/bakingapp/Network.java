@@ -8,9 +8,9 @@ import android.net.NetworkInfo;
  * Created by korg on 31/12/2017.
  */
 
-public class Network {
+class Network {
 
-    public static boolean isOnline(Context context) {
+    static boolean isOnline(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);

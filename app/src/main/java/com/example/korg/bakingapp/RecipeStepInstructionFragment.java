@@ -9,10 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.Handler;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,16 +39,10 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_
 
 
 public class RecipeStepInstructionFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-/*
-TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do its work
-  When next is pressed, player will be reinitiated with new url and description will be changed.
-  keep current step_id...also buttons next and previous shall be checked upon whether is the first (no prev)
-  or last (no next)
-*/
 
     private final static String RECIPE_ID = "recipe id";
     private final static String STEPS_ID = "steps id";
-    private static final int GRID_COLS = 3;
+    private final static String VIDEO_POS = "video position";
     private static final int LOADER_ID = 4;
 
     private int recipeId;
@@ -63,9 +53,8 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
     private TextView description;
 
     private Cursor data;
-    private int dataLength;
-
-    private int currentCursorPos = 0;
+    private int dataSize;
+    private static long videoPosition;
 
     public RecipeStepInstructionFragment() {
     }
@@ -82,9 +71,16 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            recipeStepId = getArguments().getInt(STEPS_ID);
-            recipeId = getArguments().getInt(RECIPE_ID);
+        if (savedInstanceState != null && savedInstanceState.containsKey(RECIPE_ID) && savedInstanceState.containsKey(STEPS_ID) && savedInstanceState.containsKey(VIDEO_POS)) {
+            recipeStepId = savedInstanceState.getInt(STEPS_ID);
+            recipeId = savedInstanceState.getInt(RECIPE_ID);
+            videoPosition = savedInstanceState.getLong(VIDEO_POS);
+        } else {
+            if (getArguments() != null) {
+                recipeStepId = getArguments().getInt(STEPS_ID);
+                recipeId = getArguments().getInt(RECIPE_ID);
+                videoPosition = 0;
+            }
         }
     }
 
@@ -105,13 +101,17 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
         exoPlayerView = rootView.findViewById(R.id.exoplayer);
         exoPlayer = createExoPlayer();
         if (data != null) {
-            data.move(currentCursorPos);
+            data.move(recipeStepId);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+            exoPlayer.setPlayWhenReady(true);
+            exoPlayer.seekTo(videoPosition);
             exoPlayerView.setPlayer(exoPlayer);
+
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
 
-            description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+            if (description != null)
+                description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
         return rootView;
     }
@@ -128,20 +128,21 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null) {
+            this.data = data;
+            this.dataSize = data.getCount();
+            data.moveToPosition(recipeStepId);
+            String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
+            exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+            exoPlayer.seekTo(videoPosition);
+            exoPlayer.setPlayWhenReady(true);
+            exoPlayerView.setPlayer(exoPlayer);
 
-        this.data = data;
-        this.dataLength = data.getCount();
+            exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
 
-        data.moveToPosition(currentCursorPos);
-        String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
-        exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
-        exoPlayer.setPlayWhenReady(true);
-
-        exoPlayerView.setPlayer(exoPlayer);
-        exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-        description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
-
-
+            if (description != null)
+                description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+        }
     }
 
     @Override
@@ -179,29 +180,30 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
 
     public void nextClicked() {
 
-        currentCursorPos = (currentCursorPos + 1) % dataLength;
+        recipeStepId = (recipeStepId + 1) % dataSize;
 
         if (data != null) {
-            data.moveToPosition(currentCursorPos);
+            data.moveToPosition(recipeStepId);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
             exoPlayer.setPlayWhenReady(true);
             exoPlayerView.setPlayer(exoPlayer);
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-            description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+            if (description != null)
+                description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
 
     }
 
     public void previousClicked() {
 
-        if (currentCursorPos > 0)
-            currentCursorPos--;
+        if (recipeStepId > 0)
+            recipeStepId--;
         else
-            currentCursorPos = dataLength - 1;
-        
+            recipeStepId = dataSize - 1;
+
         if (data != null) {
-            data.moveToPosition(currentCursorPos);
+            data.moveToPosition(recipeStepId);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
 
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
@@ -209,7 +211,24 @@ TODO : fragment to receive COLUMN_STEPS_RECIPE_ID only and base on that to do it
 
             exoPlayerView.setPlayer(exoPlayer);
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-            description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+            if (description != null)
+                description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        exoPlayer.stop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(RECIPE_ID, recipeId);
+        outState.putInt(STEPS_ID, recipeStepId);
+        outState.putLong(VIDEO_POS, exoPlayer.getContentPosition());
+        super.onSaveInstanceState(outState);
+    }
+
+
 }

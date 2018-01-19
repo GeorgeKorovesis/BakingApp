@@ -1,5 +1,7 @@
 package com.example.korg.bakingapp;
 
+import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +39,9 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
     private static final int GRID_COLS = 3;
     private static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private static final String NO_CONNECTIVITY_MESSAGE = "NO INTERNET CONNECTION";
+    private LoaderManager manager;
 
+    private ActivityNotification activity;
     SharedPreferences sharedPrefs;
 
     public BakingTimeFragment() {
@@ -66,6 +70,15 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
             filter.addAction(CONNECTIVITY_ACTION);
             getActivity().registerReceiver(networkReceiver, filter);
         }
+
+        manager = getActivity().getLoaderManager();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        this.activity = (ActivityNotification) activity;
     }
 
     @Override
@@ -78,7 +91,7 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
         RecyclerView.LayoutManager layout;
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            layout = new LinearLayoutManager(getActivity());
+            layout = new GridLayoutManager(getActivity(), 1);
         else
             layout = new GridLayoutManager(getActivity(), GRID_COLS);
 
@@ -90,13 +103,16 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
         if (!isOnline && !sharedPrefs.getBoolean(getString(R.string.recipes_fetched), false)) {
             Snackbar.make(getActivity().findViewById(R.id.main_id), NO_CONNECTIVITY_MESSAGE, Snackbar.LENGTH_LONG).show();
         }
+
+        activity.updateActionBar("Recipes");
+
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
+        manager.restartLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -141,6 +157,7 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
         recipesAdapter.notifyDataSetChanged();
     }
 
+
     private class NetworkReceiver extends BroadcastReceiver {
 
         @Override
@@ -155,4 +172,5 @@ public class BakingTimeFragment extends Fragment implements LoaderCallbacks<Curs
             }
         }
     }
+
 }

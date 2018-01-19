@@ -9,8 +9,6 @@ import android.view.View;
 import static com.example.korg.bakingapp.RecipesAdapter.bakingTimeFragment;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeStepDescriptionCard;
-
 
 public class MainActivity extends AppCompatActivity implements ActivityNotification {
 
@@ -19,11 +17,17 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BakingTimeFragment recFragment = new BakingTimeFragment();
-
+        Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.main_frame, recFragment);
-        transaction.commit();
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("Recipes");
+
+        if (f == null) {
+            BakingTimeFragment recFragment = BakingTimeFragment.newInstance();
+            transaction.replace(R.id.main_frame, recFragment);
+            transaction.commit();
+        }
     }
 
     @Override
@@ -44,8 +48,7 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                     transaction.replace(R.id.main_frame, bFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                }
-                else {
+                } else {
                     RecipeStepInstructionFragment bFragment = RecipeStepInstructionFragment.newInstance(recipeId, stepsId);
                     transaction = getFragmentManager().beginTransaction();
                     transaction.replace(R.id.main_frame, bFragment);
@@ -58,15 +61,32 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                 break;
         }
     }
-    public void nextClicked (View v){
+
+    public void nextClicked(View v) {
         Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
         if (f instanceof RecipeStepInstructionFragment)
             ((RecipeStepInstructionFragment) f).nextClicked();
     }
 
-    public void previousClicked (View v){
+    public void previousClicked(View v) {
         Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
         if (f instanceof RecipeStepInstructionFragment)
             ((RecipeStepInstructionFragment) f).previousClicked();
+    }
+
+    @Override
+    public void updateActionBar(String title) {
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Fragment f = getFragmentManager().findFragmentById(R.id.main_frame);
+        if (f instanceof BakingTimeFragment)
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setTitle("Recipes");
+
     }
 }

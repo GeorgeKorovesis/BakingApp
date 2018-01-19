@@ -12,12 +12,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/card_margin"
-        android:background="@color/cardColor"
         app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_center"
         app:layout_constraintEnd_toEndOf="@+id/horizontal_guideline_right"
         app:layout_constraintStart_toEndOf="@+id/horizontal_guideline_left"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_top"
-        card_view:cardCornerRadius="@dimen/card_corner_radius">
+        card_view:cardCornerRadius="@dimen/card_corner_radius"
+        android:background="@color/cardColor">
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/exoplayer"
@@ -30,32 +30,24 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/card_margin"
-        android:background="@color/cardColor"
         app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_bottom"
         app:layout_constraintEnd_toEndOf="@+id/horizontal_guideline_right"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/horizontal_guideline_left"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_center"
         app:layout_constraintVertical_bias="0.0"
-        card_view:cardCornerRadius="@dimen/card_corner_radius">
-
-        <ScrollView
+        card_view:cardCornerRadius="@dimen/card_corner_radius"
+        android:background="@color/cardColor">
+        <TextView
+            android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:fillViewport="true">
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:autoSizeTextType="uniform"
-                android:fontFamily="@font/abhaya_libre"
-                android:gravity="center"
-                android:padding="@dimen/card_padding"
-                android:textSize="@dimen/recipient_text_size" />
-        </ScrollView>
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:padding="@dimen/card_padding"
+            android:fontFamily="@font/abhaya_libre"
+            android:textSize="20sp"
+            android:autoSizeTextType="uniform"/>
     </android.support.v7.widget.CardView>
 
     <ImageButton
@@ -66,8 +58,9 @@
         app:layout_constraintStart_toEndOf="@id/horizontal_guideline_left"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_bottom"
         android:onClick="previousClicked"
-        android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
-        tools:ignore="OnClick" />
+        android:background="@drawable/ic_keyboard_arrow_left_black_24dp"/>
+        <!--android:background="@color/cardColor"/>-->
+    <!--android:text="@string/prev"-->
 
     <ImageButton
         android:id="@+id/next"
@@ -77,8 +70,11 @@
         app:layout_constraintEnd_toEndOf="@id/horizontal_guideline_right"
         app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_bottom"
         android:onClick="nextClicked"
-        android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
-        tools:ignore="OnClick"/>
+        android:background="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
+    <!--android:text="@string/next"-->
+
+    <!--android:background="@color/cardColor"/>-->
 
 
     <android.support.constraint.Guideline
