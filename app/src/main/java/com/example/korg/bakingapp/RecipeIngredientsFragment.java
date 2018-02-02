@@ -4,22 +4,19 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_INGREDIENT;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_RECIPE_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_INGREDIENTS;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
-import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
 
 
 public class RecipeIngredientsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -30,6 +27,8 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     private int recipeId;
     private RecyclerView recView;
     private RecipesAdapter recipesAdapter;
+    private TextView ingredients;
+    private Cursor data;
 
     public RecipeIngredientsFragment() {
     }
@@ -58,20 +57,10 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_recipes, container, false);
-        recView = rootView.findViewById(R.id.recview);
-
-        RecyclerView.LayoutManager layout;
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-            layout = new GridLayoutManager(getActivity(), 1);
-        else
-            layout = new GridLayoutManager(getActivity(), GRID_COLS);
-
-
-        recView.setLayoutManager(layout);
-        recipesAdapter = new RecipesAdapter(getActivity(), null, recipeNameFragment, recipeIngredientsCard);
-        recView.setAdapter(recipesAdapter);
+        View rootView = inflater.inflate(R.layout.ingredients, container, false);
+        ingredients = rootView.findViewById(R.id.ingredients);
+        if(data!=null)
+            ingredients.setText(createIngredientsText());
 
         return rootView;
     }
@@ -105,19 +94,33 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        recipesAdapter.replaceData(data);
-        recipesAdapter.notifyDataSetChanged();
+        this.data = data;
+        if(ingredients!=null)
+            ingredients.setText(createIngredientsText());
+//        recipesAdapter.replaceData(data);
+//        recipesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        recipesAdapter.replaceData(null);
-        recipesAdapter.notifyDataSetChanged();
+        data = null;
+//        recipesAdapter.replaceData(null);
+//        recipesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(ID, recipeId);
         super.onSaveInstanceState(outState);
+    }
+
+    private String createIngredientsText()
+    {
+        String ingredientsText="";
+        data.moveToFirst();
+        while(data.moveToNext()){
+            ingredientsText += (data.getString(data.getColumnIndex(COLUMN_INGREDIENTS_INGREDIENT))+"\n");
+        }
+        return ingredientsText;
     }
 }

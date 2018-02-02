@@ -13,7 +13,7 @@ public class BakingContract {
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    static final String PATH_RECIPES = "recipes";
+    static final String PATH_RECIPES = "recipe_name";
     static final String PATH_STEPS = "steps";
     static final String PATH_INGREDIENTS = "ingredients";
 
@@ -22,7 +22,7 @@ public class BakingContract {
         static final Uri CONTENT_URI_RECIPES =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECIPES).build();
 
-        static final String TABLE_RECIPES = "recipes";
+        static final String TABLE_RECIPES = "recipe_name";
         static final String COLUMN_RECIPES_ID = "id";
         static final String COLUMN_RECIPES_SERVINGS = "servings";
         static final String COLUMN_RECIPES_IMAGE = "image";

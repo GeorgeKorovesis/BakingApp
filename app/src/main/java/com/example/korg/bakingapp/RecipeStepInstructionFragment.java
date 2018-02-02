@@ -1,6 +1,5 @@
 package com.example.korg.bakingapp;
 
-
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -8,7 +7,8 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 
+import static android.provider.BaseColumns._ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_DESCRIPTION;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_RECIPE_ID;
@@ -42,7 +43,6 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
 
     private final static String RECIPE_ID = "recipe id";
     private final static String STEPS_ID = "steps id";
-    private final static String VIDEO_POS = "video position";
     private static final int LOADER_ID = 4;
 
     private int recipeId;
@@ -54,7 +54,9 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
 
     private Cursor data;
     private int dataSize;
-    private static long videoPosition;
+
+    private boolean playWhenReady = true;
+    private boolean paused;
 
     public RecipeStepInstructionFragment() {
     }
@@ -71,48 +73,46 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(RECIPE_ID) && savedInstanceState.containsKey(STEPS_ID) && savedInstanceState.containsKey(VIDEO_POS)) {
-            recipeStepId = savedInstanceState.getInt(STEPS_ID);
-            recipeId = savedInstanceState.getInt(RECIPE_ID);
-            videoPosition = savedInstanceState.getLong(VIDEO_POS);
-        } else {
-            if (getArguments() != null) {
-                recipeStepId = getArguments().getInt(STEPS_ID);
-                recipeId = getArguments().getInt(RECIPE_ID);
-                videoPosition = 0;
-            }
+        if (getArguments() != null) {
+            recipeStepId = getArguments().getInt(STEPS_ID);
+            recipeId = getArguments().getInt(RECIPE_ID);
         }
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
+        setRetainInstance(true);
+
+        getActivity().getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_instruction, container, false);
 
         description = rootView.findViewById(R.id.description);
-
         exoPlayerView = rootView.findViewById(R.id.exoplayer);
-        exoPlayer = createExoPlayer();
-        if (data != null) {
-            data.move(recipeStepId);
-            String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
-            exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
-            exoPlayer.setPlayWhenReady(true);
-            exoPlayer.seekTo(videoPosition);
-            exoPlayerView.setPlayer(exoPlayer);
 
+
+        if (data != null) {
+            if (exoPlayer == null) {
+
+                exoPlayer = createExoPlayer();
+                data.moveToPosition(recipeStepId);
+                String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
+                exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+                playWhenReady = true;
+            }
+
+            exoPlayer.setPlayWhenReady(playWhenReady);
+
+            exoPlayerView.setPlayer(exoPlayer);
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
 
             if (description != null)
                 description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
+
         return rootView;
     }
 
@@ -127,15 +127,23 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null) {
-            this.data = data;
-            this.dataSize = data.getCount();
+
+        this.data = data;
+        this.dataSize = data.getCount();
+        if (exoPlayerView != null) {
             data.moveToPosition(recipeStepId);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
+            if (exoPlayer == null)
+                exoPlayer = createExoPlayer();
             exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
-            exoPlayer.seekTo(videoPosition);
-            exoPlayer.setPlayWhenReady(true);
+
+            exoPlayer.setPlayWhenReady(playWhenReady);
             exoPlayerView.setPlayer(exoPlayer);
 
             exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
@@ -147,7 +155,6 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     public SimpleExoPlayer createExoPlayer() {
@@ -163,7 +170,6 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
     }
 
     public SimpleExoPlayer preparePlayer(SimpleExoPlayer player, Uri videoUrl) {
-
 
         // Measures bandwidth during playback. Can be null if not required.
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -192,7 +198,6 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
             if (description != null)
                 description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
         }
-
     }
 
     public void previousClicked() {
@@ -206,7 +211,8 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
             data.moveToPosition(recipeStepId);
             String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
 
-            exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+            if (!url.isEmpty())
+                exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
             exoPlayer.setPlayWhenReady(true);
 
             exoPlayerView.setPlayer(exoPlayer);
@@ -219,16 +225,67 @@ public class RecipeStepInstructionFragment extends Fragment implements LoaderMan
     @Override
     public void onDestroy() {
         super.onDestroy();
-        exoPlayer.stop();
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+            exoPlayer.release();
+        }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(RECIPE_ID, recipeId);
-        outState.putInt(STEPS_ID, recipeStepId);
-        outState.putLong(VIDEO_POS, exoPlayer.getContentPosition());
-        super.onSaveInstanceState(outState);
+    public void onPause() {
+        super.onPause();
+        if (exoPlayer != null) {
+            playWhenReady = exoPlayer.getPlayWhenReady();
+            exoPlayer.setPlayWhenReady(false);
+            paused = true;
+        }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (paused) {
+            exoPlayer.setPlayWhenReady(true);
+            paused = false;
+        } else if (exoPlayer != null)
+            exoPlayer.setPlayWhenReady(playWhenReady);
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        playWhenReady = exoPlayer.getPlayWhenReady();
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        populateViewForOrientation(inflater, (ViewGroup) getView());
+    }
+
+    private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+
+        viewGroup.removeAllViewsInLayout();
+        View rootView = inflater.inflate(R.layout.fragment_recipe_step_instruction, viewGroup);
+
+        description = rootView.findViewById(R.id.description);
+        exoPlayerView = rootView.findViewById(R.id.exoplayer);
+
+        if (data != null) {
+            if (exoPlayer == null) {
+
+                exoPlayer = createExoPlayer();
+                data.moveToPosition(recipeStepId);
+                String url = data.getString(data.getColumnIndex(COLUMN_STEPS_VIDEOURL));
+                if (!url.isEmpty())
+                    exoPlayer = preparePlayer(exoPlayer, Uri.parse(url));
+                playWhenReady = true;
+            }
+
+            exoPlayer.setPlayWhenReady(playWhenReady);
+
+            exoPlayerView.setPlayer(exoPlayer);
+            exoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+
+            if (description != null)
+                description.setText(data.getString(data.getColumnIndex(COLUMN_STEPS_DESCRIPTION)));
+        }
+
+    }
 }

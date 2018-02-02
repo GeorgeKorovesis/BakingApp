@@ -13,10 +13,23 @@ class Network {
     static boolean isOnline(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        boolean isWifiConn = networkInfo.isConnected();
-        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        boolean isMobileConn = networkInfo.isConnected();
-        return (isWifiConn || isMobileConn);
+        NetworkInfo networkInfo;
+        if (connMgr != null) {
+            networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            boolean isWifiConn = false;
+            if (networkInfo != null) {
+                isWifiConn = networkInfo.isConnected();
+            }
+
+            networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            boolean isMobileConn = false;
+            if (networkInfo != null) {
+                 isMobileConn = networkInfo.isConnected();
+            }
+            return (isWifiConn || isMobileConn);
+        }
+        return false;
     }
 }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_id"
+    android:id="@+id/main_layout"
 
     tools:context="com.example.korg.bakingapp.MainActivity">
 
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/mainColor"
-        tools:context="com.example.korg.bakingapp.BakingTimeFragment">
+        tools:context="com.example.korg.bakingapp.RecipeNameFragment">
     </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

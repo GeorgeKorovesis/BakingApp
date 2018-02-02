@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database table
     private static final int DB_VERSION = 3;
-    private static final String DB_NAME = "recipes.db";
+    private static final String DB_NAME = "recipe_name.db";
 
     // Database creation SQL statement
     private static final String TABLE_RECIPES_CREATE = "create table " + TABLE_RECIPES
@@ -30,7 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_INGREDIENTS_QUANTITY + " double not null, "
             + COLUMN_INGREDIENTS_MEASURE + " text not null ,"
             + COLUMN_INGREDIENTS_INGREDIENT + " text not null ,"
-            + "FOREIGN KEY (" + COLUMN_INGREDIENTS_RECIPE_ID + ") REFERENCES recipes(" + COLUMN_RECIPES_ID + ")" + ");";
+            + "FOREIGN KEY (" + COLUMN_INGREDIENTS_RECIPE_ID + ") REFERENCES recipe_name(" + COLUMN_RECIPES_ID + ")" + ");";
 
     private static final String TABLE_STEPS_CREATE = "create table " + TABLE_STEPS
             + "(" + _ID + " integer primary key autoincrement, "
@@ -40,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_STEPS_DESCRIPTION + " text not null ,"
             + COLUMN_STEPS_VIDEOURL + " text not null ,"
             + COLUMN_STEPS_THUMBNAILURL + " text ,"
-            + "FOREIGN KEY (" + COLUMN_STEPS_RECIPE_ID + ") REFERENCES recipes(" + COLUMN_RECIPES_ID + ")" + ");";
+            + "FOREIGN KEY (" + COLUMN_STEPS_RECIPE_ID + ") REFERENCES recipe_name(" + COLUMN_RECIPES_ID + ")" + ");";
 
 
     DatabaseHelper(Context context) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,14 +8,10 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_player"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="@dimen/card_margin"
         android:background="@color/cardColor"
-        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_mid"
-        app:layout_constraintEnd_toStartOf="@+id/horizontal_guideline_right"
-        app:layout_constraintStart_toEndOf="@+id/horizontal_guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_top"
         card_view:cardCornerRadius="@dimen/card_corner_radius">
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
@@ -24,62 +19,4 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </android.support.v7.widget.CardView>
-
-    <ImageButton
-        android:id="@+id/previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_margin"
-        app:layout_constraintStart_toEndOf="@id/horizontal_guideline_left"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_mid"
-        android:onClick="previousClicked"
-        android:background="@drawable/ic_keyboard_arrow_left_black_24dp"/>
-
-
-    <ImageButton
-        android:id="@+id/next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_margin"
-        app:layout_constraintEnd_toEndOf="@id/horizontal_guideline_right"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_guideline_mid"
-        android:onClick="nextClicked"
-        android:background="@drawable/ic_keyboard_arrow_right_black_24dp" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.01" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_mid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
-
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.99" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.01" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/horizontal_guideline_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.99" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
