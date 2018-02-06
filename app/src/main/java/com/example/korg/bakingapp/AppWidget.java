@@ -18,7 +18,6 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIP
  */
 public class AppWidget extends AppWidgetProvider {
 
-
     private static final String ACTION_NEXT_CLICK =
             "com.example.korg.bakingapp.NEXT_CLICK";
     private static final String ACTION_PREV_CLICK =

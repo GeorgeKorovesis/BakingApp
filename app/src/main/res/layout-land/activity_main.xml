@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_layout"
-
+    android:background="@color/mainColor"
     tools:context="com.example.korg.bakingapp.MainActivity">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,8 +12,7 @@
         android:id="@+id/main_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/mainColor"
-        tools:context="com.example.korg.bakingapp.RecipeNameFragment">
-    </FrameLayout>
+        tools:context="com.example.korg.bakingapp.RecipeNameFragment"
+        android:layout_marginTop="@dimen/card_margin"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

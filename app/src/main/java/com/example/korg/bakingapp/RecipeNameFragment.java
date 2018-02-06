@@ -21,6 +21,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.BindBool;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_IMAGE;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_NAME;
@@ -32,7 +36,6 @@ import static com.example.korg.bakingapp.RecipesAdapter.recipeCard;
 public class RecipeNameFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     private RecipesAdapter recipesAdapter;
-    private RecyclerView recView;
     private NetworkReceiver networkReceiver;
     private static final int LOADER_ID = 1;
     private static final int GRID_COLS_3 = 3;
@@ -40,11 +43,11 @@ public class RecipeNameFragment extends Fragment implements LoaderCallbacks<Curs
     private static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
     private static final String NO_CONNECTIVITY_MESSAGE = "NO INTERNET CONNECTION";
     private ActivityNotification activity;
-    SharedPreferences sharedPrefs;
+    private SharedPreferences sharedPrefs;
+    private RecyclerView recView;
+    private Cursor data;
 
     private boolean isTablet;
-
-    private Cursor data;
 
     public RecipeNameFragment() {
     }
@@ -58,7 +61,7 @@ public class RecipeNameFragment extends Fragment implements LoaderCallbacks<Curs
         super.onCreate(savedInstanceState);
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
+        isTablet = getActivity().getResources().getBoolean(R.bool.isTablet);
         boolean isOnline = Network.isOnline(getActivity());
 
         /*Fetch data if there is internet connectivity and data have not been fetched before*/
@@ -88,12 +91,9 @@ public class RecipeNameFragment extends Fragment implements LoaderCallbacks<Curs
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipe_name, container, false);
+
         recView = rootView.findViewById(R.id.recview);
-
         RecyclerView.LayoutManager layout;
-
-        isTablet = getResources().getBoolean(R.bool.isTablet);
-
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT && !isTablet)
             layout = new GridLayoutManager(getActivity(), GRID_COLS_1);

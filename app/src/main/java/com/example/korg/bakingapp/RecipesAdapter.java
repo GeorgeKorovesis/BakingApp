@@ -19,10 +19,8 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIP
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_IMAGE;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_RECIPES_NAME;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_DESCRIPTION;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_RECIPE_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_SHORTDESCRIPTION;
-import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_THUMBNAILURL;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_STEPS_VIDEOURL;
 
 /**
@@ -43,6 +41,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
     final static String recipeIngredientsCard = "RecipeIngredientsCard";
     final static String recipeStepDescriptionCard = "RecipeStepDescriptionCard";
     final static String recipeStepCard = "RecipeStepCard";
+
 
     RecipesAdapter(Object object, Cursor recipesCursor, String fragment, String card) {
         context = (Context) object;
@@ -98,7 +97,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
                         if (position == 0) {
                             holder.recipe.setText(context.getString(R.string.recipe_ingredients));
                             recipesCursor.moveToPosition(position);
-
                             final int id = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_RECIPE_ID));
                             holder.recipe.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -108,17 +106,15 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
                             });
                         } else {
                             if (recipesCursor != null) {
-                                recipesCursor.moveToPosition(position);
+                                recipesCursor.moveToPosition(position-1);
                                 holder.recipe.setText(recipesCursor.getString(recipesCursor.getColumnIndex(COLUMN_STEPS_SHORTDESCRIPTION)));
-
-                                final int stepsId = position;
+                                final int stepsId = position-1;
                                 final int recipeId = recipesCursor.getInt(recipesCursor.getColumnIndex(COLUMN_STEPS_RECIPE_ID));
 
                                 holder.recipe.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         callback.notifyActivity(recipeNameFragment, recipeStepDescriptionCard, recipeId, stepsId);
-
                                     }
                                 });
 
@@ -159,8 +155,13 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
     @Override
     public int getItemCount() {
-        if (recipesCursor != null)
-            return recipesCursor.getCount();
+        if (recipesCursor != null) {
+            int count = recipesCursor.getCount();
+            if (fragment.equals(recipeNameFragment))
+                return count + 1;
+            else
+                return count;
+        }
         else
             return 0;
     }

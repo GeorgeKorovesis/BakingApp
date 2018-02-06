@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#3E2723</color>
     <color name="colorAccent">#FF4081</color>
     <color name="mainColor">#8D6E63</color>
+    <color name="mainColorWidget">#BF8D6E63</color>
     <color name="cardColor">#EFEBE9</color>
 </resources>

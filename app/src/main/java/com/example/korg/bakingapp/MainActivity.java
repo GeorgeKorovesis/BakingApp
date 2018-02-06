@@ -1,7 +1,5 @@
 package com.example.korg.bakingapp;
 
-import android.content.res.Configuration;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import static android.view.View.VISIBLE;
 import static com.example.korg.bakingapp.RecipesAdapter.bakingTimeFragment;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeIngredientsCard;
 import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
@@ -17,18 +16,36 @@ import static com.example.korg.bakingapp.RecipesAdapter.recipeNameFragment;
 public class MainActivity extends AppCompatActivity implements ActivityNotification {
 
     private boolean isTablet;
-    private final String mLayoutVisibility = "MainLayoutVisibility";
-    private final String fragmentTag = "RecipeStepInstructionFragment";
+    private LinearLayout mainLayout;
+    private LinearLayout primaryLayout;
+    private LinearLayout secondaryLayout;
+    private final String OrientationChanged = "OrientationChanged";
+    private final String CurrentFragment = "CurrentFragment";
+    private final String ActionBarTitle = "ActionBarTitle";
+    private boolean orientationChanged;
+    private String currentFragment;
+    private String actionBarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         isTablet = getResources().getBoolean(R.bool.isTablet);
+        mainLayout = findViewById(R.id.main_layout);
+        primaryLayout = findViewById(R.id.primary_layout);
+        secondaryLayout = findViewById(R.id.secondary_layout);
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        if (getSupportFragmentManager().findFragmentById(R.id.main_frame) == null && savedInstanceState == null) {
+        if (savedInstanceState != null) {
+            orientationChanged = savedInstanceState.getBoolean(OrientationChanged);
+            currentFragment = savedInstanceState.getString(CurrentFragment);
+            actionBarTitle = savedInstanceState.getString(ActionBarTitle);
+        }
+        /*only for first time*/
+        if (currentFragment == null) {
             RecipeNameFragment recFragment = RecipeNameFragment.newInstance();
             transaction.replace(R.id.main_frame, recFragment);
             transaction.commit();
@@ -37,26 +54,15 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             }
             if (isTablet) {
-                findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
-                findViewById(R.id.primary_layout).setVisibility(View.GONE);
-                findViewById(R.id.secondary_layout).setVisibility(View.GONE);
+                primaryLayout.setVisibility(View.GONE);
+                secondaryLayout.setVisibility(View.GONE);
             }
-        }
-
-        if (isTablet && savedInstanceState != null) {
-            if (savedInstanceState.getInt(mLayoutVisibility) == View.GONE) {
-                findViewById(R.id.main_layout).setVisibility(View.GONE);
-                findViewById(R.id.primary_layout).setVisibility(View.VISIBLE);
-                findViewById(R.id.secondary_layout).setVisibility(View.VISIBLE);
-                Fragment f = getSupportFragmentManager().findFragmentByTag(fragmentTag);
-                if (f != null) {
-                    transaction.replace(R.id.secondary_layout, f);
-                    transaction.commit();
-                }
-            } else {
-                findViewById(R.id.main_layout).setVisibility(View.VISIBLE);
-                findViewById(R.id.primary_layout).setVisibility(View.GONE);
-                findViewById(R.id.secondary_layout).setVisibility(View.GONE);
+        } else if (isTablet && (currentFragment.contains("RecipeStepInstructionFragment") || currentFragment.contains("RecipeIngredientsFragment")) && orientationChanged) {
+            mainLayout.setVisibility(View.GONE);
+            orientationChanged = false;
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(actionBarTitle);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
     }
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
     @Override
     public void notifyActivity(String tFragment, String tCard, int recipeId, int stepsId) {
         FragmentTransaction transaction;
+        /*check which fragment called notifyActivity and perform some actions*/
         switch (tFragment) {
             case (bakingTimeFragment):
                 if (getSupportActionBar() != null)
@@ -74,19 +81,18 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                 if (!isTablet) {
                     RecipeNameDetailsFragment rf = RecipeNameDetailsFragment.newInstance(recipeId);
                     transaction.replace(R.id.main_frame, rf);
+                    currentFragment = rf.toString();
                 } else {
-                    LinearLayout mainLayout = findViewById(R.id.main_layout);
-                    LinearLayout primaryLayout = findViewById(R.id.primary_layout);
-                    LinearLayout secondaryLayout = findViewById(R.id.secondary_layout);
-                    mainLayout.setVisibility(View.GONE);
-                    primaryLayout.setVisibility(View.VISIBLE);
-                    secondaryLayout.setVisibility(View.VISIBLE);
-
                     transaction.remove(getSupportFragmentManager().findFragmentById(R.id.main_frame));
                     RecipeNameDetailsFragment rf = RecipeNameDetailsFragment.newInstance(recipeId);
-                    transaction.replace(R.id.primary_frame, rf);
                     RecipeStepInstructionFragment ri = RecipeStepInstructionFragment.newInstance(recipeId, stepsId);
+                    secondaryLayout.setVisibility(VISIBLE);
+                    primaryLayout.setVisibility(VISIBLE);
+                    mainLayout.setVisibility(View.GONE);
+                    transaction.replace(R.id.primary_frame, rf);
                     transaction.replace(R.id.secondary_frame, ri);
+
+                    currentFragment = ri.toString();
                 }
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -106,16 +112,19 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
                         transaction.addToBackStack(null);
                     }
                     transaction.commit();
+                    currentFragment = fragment.toString();
                 } else {
                     RecipeStepInstructionFragment fragment = RecipeStepInstructionFragment.newInstance(recipeId, stepsId);
                     transaction = getSupportFragmentManager().beginTransaction();
-                    if (isTablet)
-                        transaction.replace(R.id.secondary_frame, fragment, fragmentTag);
-                    else {
+                    if (isTablet) {
+                        transaction.remove(getSupportFragmentManager().findFragmentById(R.id.secondary_frame));
+                        transaction.replace(R.id.secondary_frame, fragment);
+                    } else {
                         transaction.replace(R.id.main_frame, fragment);
                         transaction.addToBackStack(null);
                     }
                     transaction.commit();
+                    currentFragment = fragment.toString();
                 }
                 break;
             default:
@@ -141,18 +150,21 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
             getSupportActionBar().setTitle(title);
     }
 
-
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().findFragmentById(R.id.primary_frame) instanceof RecipeNameDetailsFragment || getSupportFragmentManager().findFragmentById(R.id.main_frame) instanceof RecipeNameDetailsFragment) {
+        Fragment primaryFrame=getSupportFragmentManager().findFragmentById(R.id.primary_frame);
+        Fragment mainFrame=getSupportFragmentManager().findFragmentById(R.id.main_frame);
+        Fragment secondaryFrame=getSupportFragmentManager().findFragmentById(R.id.secondary_frame);
+
+        if (primaryFrame instanceof RecipeNameDetailsFragment || mainFrame instanceof RecipeNameDetailsFragment) {
             if (isTablet) {
-                LinearLayout mainLayout = findViewById(R.id.main_layout);
-                LinearLayout primaryLayout = findViewById(R.id.primary_layout);
-                LinearLayout secondaryLayout = findViewById(R.id.secondary_layout);
-                mainLayout.setVisibility(View.VISIBLE);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                mainLayout.setVisibility(VISIBLE);
                 primaryLayout.setVisibility(View.GONE);
                 secondaryLayout.setVisibility(View.GONE);
-
+                transaction.remove(primaryFrame);
+                transaction.remove(secondaryFrame);
+                transaction.commit();
             }
             if (getSupportActionBar() != null)
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -174,8 +186,14 @@ public class MainActivity extends AppCompatActivity implements ActivityNotificat
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        int lin = findViewById(R.id.main_layout).getVisibility();
-        outState.putInt(mLayoutVisibility, lin);
+        outState.putBoolean(OrientationChanged, true);
+        outState.putString(CurrentFragment, currentFragment);
+        String title = "";
+        if (getSupportActionBar() != null)
+            title = getSupportActionBar().getTitle().toString();
+        outState.putString(ActionBarTitle, title);
         super.onSaveInstanceState(outState);
     }
+
+
 }

@@ -7,14 +7,18 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_INGREDIENT;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_MEASURE;
+import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_QUANTITY;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.COLUMN_INGREDIENTS_RECIPE_ID;
 import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_INGREDIENTS;
 
@@ -22,11 +26,8 @@ import static com.example.korg.bakingapp.BakingContract.BakingEntry.CONTENT_URI_
 public class RecipeIngredientsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ID = "id";
-    private static final int GRID_COLS = 3;
     private static final int LOADER_ID = 3;
     private int recipeId;
-    private RecyclerView recView;
-    private RecipesAdapter recipesAdapter;
     private TextView ingredients;
     private Cursor data;
 
@@ -57,9 +58,10 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.ingredients, container, false);
         ingredients = rootView.findViewById(R.id.ingredients);
-        if(data!=null)
+        if (data != null)
             ingredients.setText(createIngredientsText());
 
         return rootView;
@@ -95,17 +97,13 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         this.data = data;
-        if(ingredients!=null)
+        if (ingredients != null)
             ingredients.setText(createIngredientsText());
-//        recipesAdapter.replaceData(data);
-//        recipesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         data = null;
-//        recipesAdapter.replaceData(null);
-//        recipesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -114,13 +112,17 @@ public class RecipeIngredientsFragment extends Fragment implements LoaderManager
         super.onSaveInstanceState(outState);
     }
 
-    private String createIngredientsText()
-    {
-        String ingredientsText="";
-        data.moveToFirst();
-        while(data.moveToNext()){
-            ingredientsText += (data.getString(data.getColumnIndex(COLUMN_INGREDIENTS_INGREDIENT))+"\n");
+    private String createIngredientsText() {
+        StringBuilder ingredientsText = new StringBuilder("");
+        if(data!=null) {
+            data.moveToFirst();
+            while (data.moveToNext()) {
+                String text = data.getString(data.getColumnIndex(COLUMN_INGREDIENTS_QUANTITY)).concat(" ").
+                        concat(data.getString(data.getColumnIndex(COLUMN_INGREDIENTS_MEASURE))).concat(" ").
+                        concat(data.getString(data.getColumnIndex(COLUMN_INGREDIENTS_INGREDIENT))).concat("\n");
+                ingredientsText.append(text);
+            }
         }
-        return ingredientsText;
+        return ingredientsText.toString();
     }
 }
